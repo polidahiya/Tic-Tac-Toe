@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        overflow: hidden;
+        height: 100vh;
+        display: grid;
+        place-items: center;
+        user-select: none;
+        background: linear-gradient(45deg, rgb(0, 81, 255), rgb(0, 255, 136));
+      }
+      .board {
+        height: min(80vh, 80vw);
+        aspect-ratio: 1;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+      .tile {
+        aspect-ratio: 1;
+        width: 100%;
+        box-sizing: border-box;
+        border: 2px solid white;
+        display: grid;
+        place-items: center;
+        border-radius: 10px;
+        font-size: min(10vw, 10vh);
+      }
+      .tile:hover {
+        background: rgba(128, 128, 128, 0.741);
+      }
+      .turn {
+        font-size: min(10vw, 10vh);
+      }
+      .button {
+        position: absolute;
+        min-height: min(10vh, 10vw);
+        aspect-ratio: 1;
+        bottom: 20px;
+        right: 20px;
+        cursor: pointer;
+        padding: 5px;
+        border-radius: 10px;
+      }
+      .button:hover {
+        background: rgba(0, 38, 255, 0.416);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="board"></div>
+    <div class="turn">O's Turn</div>
+    <span class="button" onclick="playagain()"><svg fill="#000000"viewBox="-2 0 24 24"xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier"stroke-linecap="round"stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="m17.428 6.572c-.201-.219-.488-.355-.807-.355-.604 0-1.094.49-1.094 1.094 0 .319.136.606.354.806l.001.001c1.455 1.452 2.355 3.46 2.355 5.678 0 4.431-3.592 8.024-8.024 8.024s-8.024-3.592-8.024-8.024c0-2.456 1.103-4.654 2.841-6.126l.012-.01.515 2.586c.104.505.545.88 1.073.88.377 0 .71-.191.907-.482l.002-.004 3.577-5.354v-.004l.006-.01c.017-.027.034-.053.049-.082l.007-.014c.014-.027.027-.055.04-.086l.005-.015c.011-.028.021-.056.03-.086 0-.007 0-.014.005-.02.008-.027.015-.055.021-.086 0-.013 0-.027.006-.04s.008-.044.009-.066c0-.036.005-.072.005-.109s0-.008 0-.012c0-.032 0-.064-.005-.096s-.007-.05-.011-.075c0-.01 0-.02-.004-.03-.006-.033-.015-.064-.024-.095v-.009c-.01-.033-.021-.065-.034-.096v-.004c-.013-.03-.027-.059-.041-.086l-.004-.009c-.014-.026-.029-.051-.045-.076l-.01-.016c-.015-.021-.03-.042-.046-.062l-.018-.024c-.015-.019-.033-.037-.05-.055l-.021-.024q-.038-.038-.078-.071l-.015-.011c-.023-.019-.047-.037-.071-.053l-5.362-3.58c-.171-.115-.381-.184-.608-.184-.604 0-1.094.49-1.094 1.094 0 .075.008.149.022.22l-.001-.007.791 3.978c-2.767 1.855-4.564 4.97-4.564 8.505 0 5.637 4.57 10.207 10.207 10.207s10.207-4.57 10.207-10.207c0-2.818-1.142-5.37-2.989-7.217z"></path></g></svg>
+      </span>
+
+    <script>
+      let turn = true;
+      let win = true;
+      let board = document.querySelector(".board");
+      //   create tiles
+      for (let i = 0; i < 9; i++) {
+        let tile = document.createElement("div");
+        tile.setAttribute("class", "tile");
+        board.appendChild(tile);
+      }
+
+      //
+      let tiles = document.querySelectorAll(".tile");
+      tiles.forEach((tile, index) => {
+        tile.addEventListener("click", () => {
+          if (tile.innerHTML == "" && win) {
+            if (turn) {
+              tile.innerHTML = "O";
+              turn = false;
+              document.querySelector(".turn").innerHTML = " X's Turn";
+              checkwin();
+            } else {
+              tile.innerHTML = "X";
+              turn = true;
+              document.querySelector(".turn").innerHTML = " O's Turn";
+              checkwin();
+            }
+          } //outer if
+        }); //event listner
+      }); //foreach tile
+
+      function checkwin() {
+        //
+        // diagonal \
+        if (
+          tiles[0].innerHTML == "X" &&
+          tiles[4].innerHTML == "X" &&
+          tiles[8].innerHTML == "X"
+        ) {
+          win = false;
+          whowin("X", 0, 4, 8);
+        }
+        if (
+          tiles[0].innerHTML == "O" &&
+          tiles[4].innerHTML == "O" &&
+          tiles[8].innerHTML == "O"
+        ) {
+          win = false;
+          whowin("O", 0, 4, 8);
+        }
+        //
+        // diagonal /
+        if (
+          tiles[2].innerHTML == "X" &&
+          tiles[4].innerHTML == "X" &&
+          tiles[6].innerHTML == "X"
+        ) {
+          win = false;
+          whowin("X", 2, 4, 6);
+        }
+        if (
+          tiles[2].innerHTML == "O" &&
+          tiles[4].innerHTML == "O" &&
+          tiles[6].innerHTML == "O"
+        ) {
+          win = false;
+          whowin("O", 2, 4, 6);
+        }
+        //
+        for (let i = 0; i < 3; i++) {
+          // horizontal
+          if (
+            tiles[0 + i * 3].innerHTML == "X" &&
+            tiles[1 + i * 3].innerHTML == "X" &&
+            tiles[2 + i * 3].innerHTML == "X"
+          ) {
+            win = false;
+            whowin("X", 0 + i * 3, 1 + i * 3, 2 + i * 3);
+          }
+          if (
+            tiles[0 + i * 3].innerHTML == "O" &&
+            tiles[1 + i * 3].innerHTML == "O" &&
+            tiles[2 + i * 3].innerHTML == "O"
+          ) {
+            win = false;
+            whowin("O", 0 + i * 3, 1 + i * 3, 2 + i * 3);
+          }
+          //   vertical
+          if (
+            tiles[0 + i].innerHTML == "X" &&
+            tiles[3 + i].innerHTML == "X" &&
+            tiles[6 + i].innerHTML == "X"
+          ) {
+            win = false;
+            whowin("X", 0 + i, 3 + i, 6 + i);
+          }
+          if (
+            tiles[0 + i].innerHTML == "O" &&
+            tiles[3 + i].innerHTML == "O" &&
+            tiles[6 + i].innerHTML == "O"
+          ) {
+            win = false;
+            whowin("O", 0 + i, 3 + i, 6 + i);
+          }
+        }
+      }
+      //
+      function whowin(value, x1, x2, x3) {
+        document.querySelector(".turn").innerHTML = `${value} Win`;
+        for (i = 0; i < 3; i++) {
+          tiles[x1].style = "background:green";
+          tiles[x2].style = "background:green";
+          tiles[x3].style = "background:green";
+        }
+      }
+      // playagain
+      function playagain() {
+        turn = true;
+        win = true;
+        document.querySelector(".turn").innerHTML = " O's Turn";
+        tiles.forEach((tile) => {
+          tile.innerHTML = "";
+          tile.style = "background:transparent";
+        });
+      }
+    </script>
+  </body>
+</html>
